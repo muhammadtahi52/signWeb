@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice to Sign Language Translation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        header {
+            background-color: #5B2C6F;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            height: 40px;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 80px);
+        }
+        #voice-input {
+            margin-bottom: 20px;
+        }
+        #text-output {
+            width: 400px;
+            max-width: 500px;
+            height: 250px;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            font-size: 18px;
+            outline: none;
+            resize: none;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        #text-output:focus {
+            border-color: #0056b3;
+        }
+        #video-output {
+              width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            object-fit: cover;
+            overflow: hidden;
+            display: block;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
+            margin-left: 75px;
+        }
+        #mic-button {
+            padding: 15px 30px;
+            background-color: #007bff;
+            margin-left: 100px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 05px;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+        #mic-button:hover {
+            background-color: #0056b3;
+        }
+        footer {
+            background-color: #5B2C6F;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Voice to Sign Language Translation</h1>
+    </header>
+    <h2 style="margin-left: 500px;">Translate voice to Sign Language</h2>
+    <div style="display: flex; flex-direction: row;">
+        <div style="flex: 1; margin-left: 250px;">
+
+        <textarea id="text-output" placeholder="Recognized Text" readonly></textarea>
+        <br>
+        <button id="mic-button">Start Recording</button>
+</div>
+    <div style="flex:1; display: block;">
+        <div id="video-output">
+            <video id="video" autoplay playsinline muted>
+                <source src="https://v.ftcdn.net/02/90/52/35/240_F_290523505_0K3cuya3sCQPYSROWsm0iUr2qaEAVrLL_ST.mp4" type="video/mp4">
+
+            </video>
+        </div>
+    </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Sign Translation Project</p>
+    </footer>
+
+    <script>
+        const micButton = document.getElementById('mic-button');
+        const textOutput = document.getElementById('text-output');
+        const videoOutput = document.getElementById('video-output');
+
+        micButton.addEventListener('click', () => {
+            toggleRecording();
+        });
+
+        function toggleRecording() {
+            if (micButton.textContent === 'Start Recording') {
+                micButton.textContent = 'Stop Recording';
+                startRecording();
+            } else {
+                micButton.textContent = 'Start Recording';
+                stopRecording();
+            }
+        }
+
+        function startRecording() {
+            // Placeholder function to start recording voice input
+            // This could be replaced with actual voice recognition logic
+            // For demonstration purposes, let's simulate recording and recognition
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then((stream) => {
+                    const mediaRecorder = new MediaRecorder(stream);
+                    const chunks = [];
+
+                    mediaRecorder.addEventListener('dataavailable', (event) => {
+                        chunks.push(event.data);
+                    });
+
+                    mediaRecorder.addEventListener('stop', () => {
+                        const blob = new Blob(chunks, { type: 'audio/wav' });
+                        const url = URL.createObjectURL(blob);
+                        recognizeText(url);
+                    });
+
+                    mediaRecorder.start();
+
+                    setTimeout(() => {
+                        mediaRecorder.stop();
+                    }, 3000); // Simulating a 3-second recording
+                })
+                .catch((error) => {
+                    console.error('Error accessing microphone:', error);
+                });
+        }
+
+        function stopRecording() {
+            // Placeholder function to stop recording voice input
+            // This could be implemented if needed for a real application
+        }
+
+        function recognizeText(audioUrl) {
+            // Placeholder function to recognize text from voice input
+            // This could be replaced with actual speech-to-text logic
+            // For demonstration purposes, let's just display a static recognized text
+            const recognizedText = 'This is a mock recognized text.';
+            textOutput.value = recognizedText;
+            translateToSignLanguage(recognizedText);
+        }
+
+        function translateToSignLanguage(text) {
+            // Placeholder function to translate text to sign language
+            // This could be replaced with actual translation logic
+            // For demonstration purposes, let's just display a static translated sign language
+            // You can replace the image with an actual video
+            videoOutput.innerHTML = '<img src="placeholder_sign_language_image.jpg" alt="Translated Sign Language">';
+        }
+    </script>
+</body>
+</html>

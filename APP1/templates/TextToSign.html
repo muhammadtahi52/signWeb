@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Sign Language Translation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        header {
+            background-color: #5B2C6F;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            height: 40px;
+        }
+        main {
+            padding: 20px;
+            text-align: center;
+        }
+        #text-input {
+            margin-top: 40px;
+            width: 400px;
+            height: 250px;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #3498db;
+            border-radius: 5px;
+            resize: none;
+            background-color: #fff;
+            display: block;
+            padding-bottom: 210px;
+
+        }
+        #text-input:focus {
+            border-color: #0056b3;
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: 60%;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            position: relative;
+        }
+        #translate-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: block;
+            margin-left: 150px;
+            transition: background-color 0.3s;
+        }
+        #translate-button:hover {
+            background-color: #0056b3;
+        }
+        #translationOutput {
+            margin-top: 0px;
+            font-size: 18px;
+            color: #333;
+            display: block;
+            font-weight: bold;
+            margin-left: 110px;
+        }
+        #video {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            object-fit: cover;
+            overflow: hidden;
+            display: block;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
+            margin-left: 75px;
+        }
+        footer {
+            background-color: #5B2C6F;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 style="margin: auto;">Text to Sign Language Translation</h1>
+    </header>
+
+    <h2 style="margin-left: 500px;">Translate Text to Sign Language </h2>
+    <div style="display:flex; flex-direction: row;  ">
+
+        <div style="flex: 1; margin-left: 250px;"  >
+            <div>
+                <input type="text" id="text-input" placeholder="Enter your text">
+            </div>
+           <br>
+            <button id="translate-button" style="font-weight: bold; font-size: 14px">Translate</button>
+        </div>
+
+            <div style="display:block; flex: 1;">
+                <div id="translationOutput">Translation Output</div>
+                <video id="video" autoplay playsinline muted>
+                <source src="https://v.ftcdn.net/02/90/52/35/240_F_290523505_0K3cuya3sCQPYSROWsm0iUr2qaEAVrLL_ST.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            </div>
+
+    </div>
+
+
+
+
+
+
+    <footer>
+        <p>&copy; 2024 Sign Translation Project</p>
+    </footer>
+
+    <script>
+        const textInput = document.getElementById('text-input');
+        const translateButton = document.getElementById('translate-button');
+        const video = document.getElementById('video');
+
+        translateButton.addEventListener('click', () => {
+            const text = textInput.value;
+            translateToSignLanguage(text);
+        });
+
+        function translateToSignLanguage(text) {
+            // Placeholder function for translating text to sign language
+            // Replace this with your actual translation logic
+            // For demonstration purposes, let's just show a static placeholder video
+            video.src = 'placeholder_sign_language_video.mp4';
+        }
+    </script>
+</body>
+</html>

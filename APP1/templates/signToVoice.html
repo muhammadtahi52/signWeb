@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign to Voice Translation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        header {
+            background-color: #5B2C6F;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            height: 40px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 999;
+        }
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+        }
+        footer {
+            background-color: #5B2C6F;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+        }
+
+
+        #buttons-container {
+            display: flex;
+            padding: 0px 50px;
+            flex-direction: column;
+            align-items: center;
+        }
+        button {
+            margin: 5px 0;
+            padding: 15px 25px;
+            font-size: 20px;
+            background: linear-gradient(#78408a,#39509a);
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 9px;
+            transition: background-color 0.3s;
+            width: 100%;
+            box-shadow: 3px 6px rgb(186, 182, 182);
+            font-weight: bold;
+            margin-bottom: 15px;
+            transition: 0.3s ease;
+        }
+        button:hover {
+            background-color: #7a6c83;
+            width: 105%;
+            font-size: 20px;
+        }
+
+        #translationOutput {
+            margin-top: 20px;
+            font-size: 24px;
+            color: #333;
+            font-weight: bold;
+            text-align: center;
+        }
+
+#container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    width: 80%;
+    margin-left: -300px; /* Add margin-right to create space on the right side */
+}
+
+#buttons-container {
+    display: flex;
+    padding: 0px 50px;
+    flex-direction: column;
+    align-items: center;
+}
+
+.button-wrapper {
+    position: absolute;
+    top: 50%;
+    right: 10;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+}
+
+#text-container {
+    padding: 20px;
+    width: 80%;
+    border-radius: 30px;
+    text-align: center;
+    position: relative; /* Add position relative to position children absolutely */
+    margin-right: -100px;
+
+}
+
+#translatedText {
+    margin-top: 25px;
+    width: calc(200% - 80px); /* Adjust width to account for button width and padding */
+    height: 300px;
+    padding: 12px;
+    font-size: 24px;
+    font-weight: bold;
+    border: 5px solid black;
+    border-radius: 11px;
+    resize: none;
+    background-color: #f3e8fa;
+    padding: 30px 20px;
+}
+
+#pronounceButton {
+    margin-top: 10px; /* Adjust as needed */
+    padding: 15px 25px;
+    font-size: 20px;
+    background: linear-gradient(#78408a, #39509a);
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 9px;
+    transition: background-color 0.3s;
+    font-weight: bold;
+    transition: 0.3s ease;
+    width: calc(230% - 80px);
+}
+
+#video-container1 {
+    flex: 1; /* Fill remaining space */
+    text-align: right; /* Align video to the right */
+    margin-right: 200px;
+
+}
+
+#videoElement {
+    max-width: 100%; /* Ensure video fits container */
+    height: auto; /* Maintain aspect ratio */
+    margin-left: 350px;
+
+
+}
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Sign to Text Translation</h1>
+    </header>
+    <main>
+        <div id="container">
+            <div id="video-container">
+                <div style="position: relative; width: 640px; height: 480px;">
+                    <img id="video_feed" src="https://play-lh.googleusercontent.com/2HvFDovrzfQNVydqZHSOo0eo9TUdmVv_8IZm7giVDwVFJ-r3SXV02QI0I0c6WVudbV1U" width="640" height="480">
+                    <div id="countdownDisplay" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; color: black; font-weight: bold;"></div>
+                </div>
+            </div>
+            <div id="buttons-container">
+                <button class="btnClass" id="recordButton">Start</button>
+                <button class="btnClass" id="stopButton" style="display: none;">Stop</button>
+
+            </div>
+           <div id="text-container">
+    <div id="translationOutput">Text Message</div>
+    <div class="button-wrapper">
+        <textarea id="translatedText" placeholder="Your Text Message Here" readonly></textarea>
+        <button class="btnClass" id="pronounceButton">Pronounce Sentence</button>
+    </div>
+
+    </div>
+             <div id="video-container1">
+        <video id="videoElement" autoplay poster="https://cdn.shopify.com/s/files/1/0629/6325/3429/files/ezgif.com-webp-to-gif-converter_4_480x480.gif?v=1704631026"></video>
+    </div>
+        </div>
+
+
+    </main>
+    <footer>
+        <p>&copy; 2024 Sign Translation Project</p>
+    </footer>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Start Prediction button click event
+            $("#recordButton").click(function () {
+                if (!isStreaming) {
+                    startPrediction();
+                } else {
+                    stopPrediction();
+                }
+            });
+
+            // Stop Prediction button click event
+            $("#stopButton").click(function () {
+                if (isStreaming) {
+                    stopPrediction();
+                }
+            });
+
+           // Pronounce Sentence button click event
+$("#pronounceButton").click(function () {
+    pronounceSentence();
+    // Show the GIF
+    $("#videoElement").attr("poster", "https://cdn.pixabay.com/animation/2023/10/10/13/26/13-26-45-476_512.gif");
+});
+
+
+        });
+
+        let isStreaming = false;
+        let fetchInterval; // Declare fetchInterval globally
+        let predictedSentence = ""; // Variable to store the predicted sentence
+
+        // Function to start prediction
+        function startPrediction() {
+            console.log("Prediction started...");
+            $("#recordButton").hide();
+            $("#stopButton").show();
+            $("#translatedText").val(""); // Clear the translated text area
+            $("#video_feed").removeAttr("src");
+            isStreaming = true;
+
+            // Start countdown timer for 21 seconds
+            startCountdown(21);
+
+            // Start fetching predicted sentence
+            fetchInterval = setInterval(fetchPredictedSentence, 1000);
+
+            // Start video feed
+            $("#video_feed").attr("src", "video_feed/");
+        }
+
+        // Function to start countdown
+        function startCountdown(duration) {
+            var countdown = duration;
+            var countdownInterval = setInterval(function() {
+                countdown--;
+                console.log("Countdown: " + countdown + " seconds left");
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    $("#countdownDisplay").hide(); // Hide countdown display when not needed
+                    console.log("Countdown finished.");
+                } else {
+                    // Update countdown display
+                    $("#countdownDisplay").text(countdown);
+                }
+            }, 1000); // Update countdown every second (1000 milliseconds)
+        }
+
+        // Function to stop prediction
+        function stopPrediction() {
+            console.log("Prediction stopped...");
+            $("#recordButton").show();
+            $("#stopButton").hide();
+            $("#video_feed").attr("src", "https://play-lh.googleusercontent.com/2HvFDovrzfQNVydqZHSOo0eo9TUdmVv_8IZm7giVDwVFJ-r3SXV02QI0I0c6WVudbV1U");
+            isStreaming = false;
+
+            // Stop fetching predicted sentence
+            clearInterval(fetchInterval);
+        }
+
+        // Function to fetch the predicted sentence from the server
+        function fetchPredictedSentence() {
+            $.get("/fetch_predicted_sentence/", function(data) {
+                // Store the predicted sentence locally
+                predictedSentence = data.predicted_sentence;
+                // Update the translated text area with the predicted sentence
+                $("#translatedText").val(predictedSentence);
+            });
+        }
+
+    // Function to pronounce the sentence
+async function pronounceSentence() {
+    // Create a new speech synthesis utterance with the predicted sentence
+    var utterance = new SpeechSynthesisUtterance(predictedSentence);
+
+    // Pause execution until the TTS engine is ready
+    await new Promise(resolve => {
+        utterance.onend = resolve;
+        window.speechSynthesis.speak(utterance);
+    });
+}
+
+
+        // Keydown event listener
+        document.addEventListener("keydown", function(event) {
+            // Check if 's' key is pressed to add a space
+            if (event.key === 's') {
+                fetch('/add_space/', {
+                    method: 'POST',
+                }).then(response => {
+                    // Handle response if needed
+                });
+            }
+
+            // Check if 'd' key is pressed to delete the last letter
+            if (event.key === 'd') {
+                fetch('/delete_letter/', {
+                    method: 'POST',
+                }).then(response => {
+                    // Handle response if needed
+                });
+            }
+        });
+
+    </script>
+</body>
+</html>

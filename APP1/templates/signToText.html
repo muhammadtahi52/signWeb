@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign to Text Translation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        header {
+            background-color: #5B2C6F;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            height: 40px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 999;
+        }
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+        }
+        footer {
+            background-color: #5B2C6F;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+        }
+        #container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            width: 80%;
+        }
+        #buttons-container {
+            display: flex;
+            padding: 0px 50px;
+            flex-direction: column;
+            align-items: center;
+        }
+        button {
+            margin: 5px 0;
+            padding: 15px 25px;
+            font-size: 20px;
+            background: linear-gradient(#78408a,#39509a);
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 9px;
+            transition: background-color 0.3s;
+            width: 100%;
+            box-shadow: 3px 6px rgb(186, 182, 182);
+            font-weight: bold;
+            margin-bottom: 15px;
+            transition: 0.3s ease;
+        }
+        button:hover {
+            background-color: #7a6c83;
+            width: 105%;
+            font-size: 20px;
+        }
+        #text-container {
+            padding: 20px;
+            width: 40%;
+            border-radius: 50px;
+            text-align: center;
+        }
+        #translationOutput {
+            margin-top: 20px;
+            font-size: 24px;
+            color: #333;
+            font-weight: bold;
+            text-align: center;
+        }
+        #translatedText {
+            margin-top: 25px;
+            width: 100%;
+            height: 200px;
+            padding: 12px;
+            font-size: 24px;
+            font-weight: bold;
+            border: 5px solid #black;
+            border-radius: 11px;
+            resize: none;
+            background-color: #f3e8fa;
+            padding: 30px 20px;
+        }
+        #suggestions {
+            margin-top: 15px;
+            font-size: 20px;
+            color: #333;
+            display: flex;
+            justify-content: space-around;
+        }
+        #suggestions button {
+            background-color: #ddd;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #suggestions button:hover {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Sign to Text Translation</h1>
+    </header>
+    <main>
+        <div id="container">
+            <div id="video-container">
+                <div style="position: relative; width: 640px; height: 480px;">
+                    <img id="video_feed" src="https://play-lh.googleusercontent.com/2HvFDovrzfQNVydqZHSOo0eo9TUdmVv_8IZm7giVDwVFJ-r3SXV02QI0I0c6WVudbV1U" width="640" height="480">
+                    <div id="countdownDisplay" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; color: black; font-weight: bold;"></div>
+                </div>
+            </div>
+            <div id="buttons-container">
+                <button class="btnClass" id="recordButton">Start</button>
+                <button class="btnClass" id="stopButton" style="display: none;">Stop</button>
+            </div>
+            <div id="text-container">
+                <div id="translationOutput">Text Message</div>
+                <textarea id="translatedText" placeholder="Your Text Message Here" readonly></textarea>
+                <div id="suggestions"></div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 Sign Translation Project</p>
+    </footer>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#recordButton").click(function () {
+                if (!isStreaming) {
+                    startPrediction();
+                } else {
+                    stopPrediction();
+                }
+            });
+
+            $("#stopButton").click(function () {
+                if (isStreaming) {
+                    stopPrediction();
+                }
+            });
+        });
+
+        let isStreaming = false;
+        let fetchInterval;
+
+        function startPrediction() {
+            console.log("Prediction started...");
+            $("#recordButton").hide();
+            $("#stopButton").show();
+            $("#translatedText").val("");
+            $("#video_feed").removeAttr("src");
+            isStreaming = true;
+
+            startCountdown(21);
+            fetchInterval = setInterval(fetchPredictedSentence, 1000);
+            $("#video_feed").attr("src", "video_feed/");
+        }
+
+        function startCountdown(duration) {
+            var countdown = duration;
+            var countdownInterval = setInterval(function() {
+                countdown--;
+                console.log("Countdown: " + countdown + " seconds left");
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    $("#countdownDisplay").hide();
+                    console.log("Countdown finished.");
+                } else {
+                    $("#countdownDisplay").text(countdown);
+                }
+            }, 1000);
+        }
+
+        function stopPrediction() {
+            console.log("Prediction stopped...");
+            $("#recordButton").show();
+            $("#stopButton").hide();
+            $("#video_feed").attr("src", "https://play-lh.googleusercontent.com/2HvFDovrzfQNVydqZHSOo0eo9TUdmVv_8IZm7giVDwVFJ-r3SXV02QI0I0c6WVudbV1U");
+            isStreaming = false;
+            clearInterval(fetchInterval);
+        }
+
+        function fetchPredictedSentence() {
+            $.get("/fetch_predicted_sentence/", function(data) {
+                $("#translatedText").val(data.predicted_sentence);
+                updateSuggestions(data.suggestions);
+            });
+        }
+
+        function updateSuggestions(suggestions) {
+            const suggestionsContainer = $("#suggestions");
+            suggestionsContainer.empty();
+            suggestions.forEach(suggestion => {
+                const button = $("<button></button>").text(suggestion);
+                button.click(function() {
+                    $("#translatedText").val((i, val) => val + suggestion + " ");
+                });
+                suggestionsContainer.append(button);
+            });
+        }
+    </script>
+</body>
+</html>
